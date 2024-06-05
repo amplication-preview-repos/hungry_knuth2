@@ -1,0 +1,68 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Column {
+  board        Board?   @relation(fields: [boardId], references: [id])
+  boardId      String?  @db.ObjectId
+  columnName   String?
+  createdAt    DateTime @default(now())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String?
+  relatedBoard String?
+  relatedTasks String?
+  tasks        Task[]
+  updatedAt    DateTime @updatedAt
+}
+
+model Board {
+  columns     Column[]
+  createdAt   DateTime @default(now())
+  createdBy   String?
+  description String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  assignedTo      String?
+  assignedUser    String?
+  column          Column?             @relation(fields: [columnId], references: [id])
+  columnId        String?             @db.ObjectId
+  createdAt       DateTime            @default(now())
+  description     String?
+  id              String              @id @default(auto()) @map("_id") @db.ObjectId
+  relatedColumn   String?
+  status          EnumTaskStatus?
+  taskDescription String?
+  taskStatus      EnumTaskTaskStatus?
+  taskTitle       String?
+  title           String?
+  updatedAt       DateTime            @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumTaskStatus {
+  Option1
+}
+
+enum EnumTaskTaskStatus {
+  Option1
+}
